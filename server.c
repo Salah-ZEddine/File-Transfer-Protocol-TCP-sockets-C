@@ -12,10 +12,11 @@
 #define MYPORT 3490
 #define IPADD "127.0.0.1"
 #define BACKLOG 5
+#define MAXDATASIZE 1024
 
 void send_file(FILE *file, int new_fd){
 
-    char buffer[1024];
+    char buffer[MAXDATASIZE];
     size_t bytes_read;
     while ((bytes_read = fread(buffer, 1, sizeof(buffer), file)) > 0)
     {
