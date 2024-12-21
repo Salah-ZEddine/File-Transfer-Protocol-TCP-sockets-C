@@ -22,12 +22,12 @@ void send_file(FILE *file, int new_fd){
     {
         if (send(new_fd, buffer, bytes_read, 0) == -1)
         {
-            perror("Envoie de fichier non réussie");
+            perror("[-]Envoie de fichier non réussie");
             break;
         }
     }
 
-    printf("File transfer complete\n");
+    printf("[+]File transfer complete\n");
 
     fclose(file);
 }
@@ -45,10 +45,10 @@ int main()
 
     if ((sockfd = socket(AF_INET, SOCK_STREAM, 0)) == -1)
     {
-        perror("Erreur de creation de socket");
+        perror("[-]Erreur de creation de socket");
         exit(1);
     }
-    printf("Socket cree avec succes \n");
+    printf("[+]Socket cree avec succes \n");
 
     my_addr.sin_family = AF_INET;         /* host byte order */
     my_addr.sin_port = htons(MYPORT);     /* short, network byte order */
@@ -57,20 +57,20 @@ int main()
 
     if (bind(sockfd, (struct sockaddr *)&my_addr, sizeof(struct sockaddr)) == -1)
     {
-        perror("Erreur de binding");
+        perror("[-]Erreur de binding");
         exit(1);
     }
 
-    printf("Binding succesfull\n");
+    printf("[+]Binding succesfull\n");
 
     /*Attendant la connection au niveau client */
 
     if (listen(sockfd, BACKLOG) == -1)
     {
-        perror("Erreur de listening");
+        perror("[-]Erreur de listening");
         exit(1);
     }
-    printf("Entrain d'entendre les connections\n");
+    printf("[+]Entrain d'entendre les connections\n");
 
     while (1)
     {
@@ -78,21 +78,21 @@ int main()
 
         if ((new_fd = accept(sockfd, (struct sockaddr *)&their_addr, &sin_size)) == -1)
         {
-            perror("Erreur de connection");
+            perror("[-]Erreur de connection");
             continue;
         }
 
-        printf("Connection Reussite!!\n");
+        printf("[+]Connection Reussite!!\n");
 
         file = fopen("FILE", "rb");
         if (file == NULL)
         {
-            perror("Erreur d ouverture de fichier");
+            perror("[-]Erreur d ouverture de fichier");
             close(new_fd);
             continue;
         }
 
-        printf("Fichier ouvert \n");
+        printf("[+]Fichier ouvert \n");
         send_file(file, new_fd);
         fclose(file);
         close(new_fd);
