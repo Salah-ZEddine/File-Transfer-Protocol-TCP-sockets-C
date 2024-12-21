@@ -38,12 +38,12 @@ int main()
     int sockfd, new_fd;            /* Ecouter sock_fd, nouvelle connection sur new_fd */
     struct sockaddr_in my_addr;    /* Adresse */
     struct sockaddr_in their_addr; /* Adresse du connecté  */
-    int sin_size;
+    socklen_t sin_size;
 
     char buffer[1024];
     FILE *file;
 
-    if (sockfd = socket(AF_INET, SOCK_STREAM, 0) == -1)
+    if ((sockfd = socket(AF_INET, SOCK_STREAM, 0)) == -1)
     {
         perror("Erreur de creation de socket");
         exit(1);
@@ -61,7 +61,7 @@ int main()
         exit(1);
     }
 
-    printf("BInding succesfull");
+    printf("Binding succesfull\n");
 
     /*Attendant la connection au niveau client */
 
@@ -76,7 +76,7 @@ int main()
     {
         sin_size = sizeof(struct sockaddr_in);
 
-        if (new_fd = accept(sockfd, (struct sockaddr *)&their_addr, sin_size) == -1)
+        if ((new_fd = accept(sockfd, (struct sockaddr *)&their_addr, &sin_size)) == -1)
         {
             perror("Erreur de connection");
             continue;

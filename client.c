@@ -20,7 +20,7 @@ int main(){
     struct sockaddr_in their_addr;
     FILE *file;
 
-    if (sockfd = socket(AF_INET, SOCK_STREAM, 0) == -1)
+    if ((sockfd = socket(AF_INET, SOCK_STREAM, 0)) == -1)
     {
         perror("Erreur de creation de socket");
         exit(1);
