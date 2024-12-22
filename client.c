@@ -13,12 +13,15 @@
 #define IPADD "127.0.0.1"
 #define MAXDATASIZE 1024
 
+
 int main(){
 
     int sockfd, numbytes;
     char buf[MAXDATASIZE];
     struct sockaddr_in their_addr;
     FILE *file;
+    char mode;
+    char fileName[256];
 
     if ((sockfd = socket(AF_INET, SOCK_STREAM, 0)) == -1)
     {
@@ -43,24 +46,67 @@ int main(){
 
     printf("[+]Demande de connection a ete cree\n");
 
-    file = fopen("received_file", "wb");
-    if (file == NULL) {
-        perror("[-]Erreur d'ouverture du fichier");
-        exit(1);
-    }
+    printf("Entrer le mode (r pour recevoir, u pour envoyer)\n");
+    scanf("%c",&mode);
 
-    while ((numbytes = recv(sockfd, buf, MAXDATASIZE, 0)) > 0) {
-        fwrite(buf, sizeof(char), numbytes, file);
-    }
-
-    if (numbytes == -1) {
-        perror("[-]Erreur de réception");
-    }
-
-    printf("[+]Transfert de fichier terminé\n");
-
+    switch (mode){
+    case 'u':
+        openFile(file,"received_file","wb");
+        receive_file(file,sockfd);
+        break;
     
-    fclose(file);
+    case 'r':
+        printf("[+]Entre le nom de fichier a envoyé\n");
+        scanf("%s", fileName);
+        openFile(file,fileName,"rb");
+        send_file(file,sockfd);
+        break;
+    
+    default:
+        printf("Entre un mode convennable\n");
+        break;
+    }
     close(sockfd);
     return 0;
+}
+
+void openFile(FILE *file,char fileName[256], char permission[25]){
+    file = fopen(fileName, permission);
+        if (file == NULL) {
+            perror("[-]Erreur d'ouverture du fichier");
+            exit(1);
+        }
+        printf("[+]Fichier ouvert sans prob\n");
+}
+
+void send_file(FILE *file, int new_fd){
+
+    char buffer[MAXDATASIZE];
+    size_t bytes_read;
+    while ((bytes_read = fread(buffer, 1, sizeof(buffer), file)) > 0)
+    {
+        if (send(new_fd, buffer, bytes_read, 0) == -1)
+        {
+            perror("[-]Envoie de fichier non réussie");
+            break;
+        }
+    }
+
+    printf("[+]File transfer complete\n");
+
+    fclose(file);
+}
+
+void receive_file(FILE *file,int sockfd){
+    char buffer[MAXDATASIZE];
+    size_t bytes_read;
+    while ((bytes_read = recv(sockfd, buffer, MAXDATASIZE, 0)) > 0) {
+        fwrite(buffer, sizeof(char), bytes_read, file);
+    }
+
+    if (bytes_read == -1) {
+        perror("[-]Erreur de réception");
+        exit(1);
+    }
+    printf("[+]Reception complete du fichier\n");
 }

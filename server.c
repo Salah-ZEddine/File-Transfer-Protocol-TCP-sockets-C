@@ -32,6 +32,29 @@ void send_file(FILE *file, int new_fd){
     fclose(file);
 }
 
+void receive_file(FILE *file,int sockfd){
+    char buffer[MAXDATASIZE];
+    size_t bytes_read;
+    while ((bytes_read = recv(sockfd, buffer, MAXDATASIZE, 0)) > 0) {
+        fwrite(buffer, sizeof(char), bytes_read, file);
+    }
+
+    if (bytes_read == -1) {
+        perror("[-]Erreur de réception");
+        exit(1);
+    }
+    printf("[+]Fichier reçu avec succes\n");
+}
+
+void openFile(FILE *file,char fileName[256], char permission[25]){
+    file = fopen(fileName, permission);
+        if (file == NULL) {
+            perror("[-]Erreur d'ouverture du fichier");
+            exit(1);
+        }
+        printf("[+]Fichier ouvert sans prob\n");
+}
+
 int main()
 {
 
@@ -39,8 +62,9 @@ int main()
     struct sockaddr_in my_addr;    /* Adresse */
     struct sockaddr_in their_addr; /* Adresse du connecté  */
     socklen_t sin_size;
+    char mode;
 
-    char buffer[1024];
+    char buffer[MAXDATASIZE];
     FILE *file;
 
     if ((sockfd = socket(AF_INET, SOCK_STREAM, 0)) == -1)
@@ -84,21 +108,32 @@ int main()
 
         printf("[+]Connection Reussite!!\n");
 
-        file = fopen("FILE", "rb");
-        if (file == NULL)
-        {
-            perror("[-]Erreur d ouverture de fichier");
+        if (recv(new_fd, &mode, sizeof(char), 0) <= 0) {
+            perror("[-]Erreur de lecture du mode");
             close(new_fd);
             continue;
         }
 
-        printf("[+]Fichier ouvert \n");
-        send_file(file, new_fd);
-        fclose(file);
-        close(new_fd);
-    }
+        switch(mode){
+            case 'u':
+                printf("[+] mode reception selectionné");
+                openFile(file,"fichier_recue","rb");
+                printf("[+]Réception du fichier en cours...\n");
+                receive_file(file, new_fd);
+                break;
+            case 's':
+                printf("[+]Mode envoi sélectionné\n");
+                openFile(file,"FILE","rb");
+                send_file(file,new_fd);
+                break;
+            default:
+                printf("Entre un mode convennable\n");
+                break;
+        }
+        
 
     close(sockfd);
 
     return 0;
+    }
 }
