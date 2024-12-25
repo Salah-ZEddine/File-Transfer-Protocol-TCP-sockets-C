@@ -46,10 +46,8 @@ int main(){
 
     printf("[+]Demande de connection a ete cree\n");
 
-<<<<<<< HEAD
     printf("Entrer le mode (r pour recevoir, u pour envoyer)\n");
     scanf("%c",&mode);
-=======
     file = fopen("received_file", "wb");
     if (file == NULL) {
         perror("[-]Erreur d'ouverture du fichier");
@@ -65,7 +63,6 @@ int main(){
     }
 
     printf("[+]Transfert de fichier terminé\n");
->>>>>>> 88c239b84dc7f4c0c85ec9ed7ab4920ea487022e
 
     switch (mode){
     case 'u':
