@@ -46,8 +46,26 @@ int main(){
 
     printf("[+]Demande de connection a ete cree\n");
 
+<<<<<<< HEAD
     printf("Entrer le mode (r pour recevoir, u pour envoyer)\n");
     scanf("%c",&mode);
+=======
+    file = fopen("received_file", "wb");
+    if (file == NULL) {
+        perror("[-]Erreur d'ouverture du fichier");
+        exit(1);
+    }
+
+    while ((numbytes = recv(sockfd, buf, MAXDATASIZE, 0)) > 0) {
+        fwrite(buf, sizeof(char), numbytes, file);
+    }
+
+    if (numbytes == -1) {
+        perror("[-]Erreur de réception");
+    }
+
+    printf("[+]Transfert de fichier terminé\n");
+>>>>>>> 88c239b84dc7f4c0c85ec9ed7ab4920ea487022e
 
     switch (mode){
     case 'u':
